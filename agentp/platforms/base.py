@@ -1,0 +1,2 @@
+class PlatformBase(object):
+    pass
