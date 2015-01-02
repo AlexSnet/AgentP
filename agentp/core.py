@@ -109,4 +109,3 @@ class AgentP(object):
         if agi:
             logging.info('Agent "%s" (%s:%s) registered.', name, module, agent)
             self._agents[name] = agi(name, **kwargs)
-            # self._agents[name].start()
