@@ -7,6 +7,7 @@ class DiskUsage(Agent):
     def tick(self):
         # c = statsd.StatsClient('localhost', 8125, prefix='system.disk')
         disk_usage = psutil.disk_usage(self.config.get('path', '/'))
+        prefix = self.config.get('prefix', '')
         self.gauge('root.total', disk_usage.total)
         self.gauge('root.used', disk_usage.used)
         self.gauge('root.free', disk_usage.free)

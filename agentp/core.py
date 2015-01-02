@@ -3,12 +3,15 @@ Agent P(erry)
 """
 
 import logging
+import signal
 import importlib
 
 from configure import Configuration
 
 from tornado.options import parse_command_line
 from tornado.options import define, options
+from tornado.ioloop import IOLoop
+from tornado import process
 
 
 class AgentP(object):
@@ -17,11 +20,25 @@ class AgentP(object):
     def __init__(self):
         self._modules = {}
         self._agents = {}
+        self._backends = {}
+
+        self.io_loop = None
+
+    def signal_cb(self, handle, signum):
+        logging.info('Signal received: %r, %r', handle, signum)
+        IOLoop.instance().add_callback_from_signal(lambda: IOLoop.current().stop())
 
     def run_command_line(self):
         define("configuration", default="/etc/agentp/agent.conf", help="Configuration file")
         parse_command_line()
 
+        # Register signal handler
+        signal.signal(signal.SIGUSR1, self.signal_cb)
+        signal.signal(signal.SIGUSR2, self.signal_cb)
+        signal.signal(signal.SIGHUP, self.signal_cb)
+        signal.signal(signal.SIGINT, self.signal_cb)
+
+        # Reading configuration
         try:
             self.config = Configuration.from_file(options.configuration).configure()
             logging.info('Reading configuration from %s', options.configuration)
@@ -29,11 +46,28 @@ class AgentP(object):
             print('Configuration file "%s" does not exists.' % options.configuration)
             raise SystemExit(1)
 
-        for agent in self.config.agents:
-            if isinstance(agent, str):
-                self.configure_agent(agent)
-            elif isinstance(agent, dict) and 'module' in agent:
-                self.configure_agent(agent.pop('module'), **agent)
+        # Forking
+        workers = self.config.get('workers', None)
+        if workers == 1 or workers == 'none' or not workers:
+            pass
+        else:
+            process.fork_processes(int(workers) if workers != 'auto' else 0)
+
+        # Defining IOLoop
+        self.io_loop = IOLoop.current()
+
+        # Configuring backends
+
+        # Configuring agents
+        if process.task_id() == 0 or not process.task_id():
+            for agent in self.config.agents:
+                if isinstance(agent, str):
+                    self.io_loop.add_callback(self.configure_agent, agent)
+                elif isinstance(agent, dict) and 'module' in agent:
+                    self.io_loop.add_callback(self.configure_agent, agent.pop('module'), **agent)
+
+        # Starting IOLoop
+        self.io_loop.start()
 
     def get_module(self, module):
         if module not in self._modules:
@@ -50,6 +84,29 @@ class AgentP(object):
         return self._modules[module] if module in self._modules else None
 
     def configure_agent(self, module, **kwargs):
-        mod = self.get_module(module)
-        logging.info('Module "%s" is %r', module, mod)
 
+        agent = kwargs.pop('agent') if 'agent' in kwargs else None
+        if ':' in module:
+            module, agent = module.split(':', 1)
+        if not agent:
+            agent = module.split('.')[-1].title()
+
+        mod = self.get_module(module)
+
+        name = kwargs.get('name', "%s:%s" % (module, agent))
+        if 'name' in kwargs:
+            kwargs.pop('name')
+
+        if name in self._agents:
+            logging.error('Name "%s" is already taken by "%s", use another name.', name, self._agents[name])
+            return
+
+        agi = None
+        if agent:
+            if hasattr(mod, agent):
+                agi = getattr(mod, agent)
+
+        if agi:
+            logging.info('Agent "%s" (%s:%s) registered.', name, module, agent)
+            self._agents[name] = agi(name, **kwargs)
+            # self._agents[name].start()

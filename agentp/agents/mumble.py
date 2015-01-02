@@ -1,9 +1,9 @@
-from agentp import register_agent
-
 import os
 import sys
 import logging
 import tempfile
+
+from agentp import Agent
 
 try:
     import Ice
@@ -13,7 +13,7 @@ except ImportError:
     raise SystemExit(1)
 
 
-class MumbleAgent():
+class Mumble(Agent):
     def __init__(self, **kwargs):
         logging.info('Mumble agent loaded')
 
