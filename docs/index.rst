@@ -7,7 +7,7 @@
 Development
 -----------
 
-The source repository can be found at https://github.com/
+The source repository can be found at https://github.com/AlexSnet/AgentP
 
 
 Contents
@@ -18,7 +18,5 @@ Contents
 
  changelog
  installation
- templatetags
- signals
  usage
  

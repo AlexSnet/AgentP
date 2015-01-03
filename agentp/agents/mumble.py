@@ -70,7 +70,7 @@ class Mumble(Agent):
             Ice.loadSlice('', slicedir + [dynslicefilepath])
             dynslicefile.close()
             os.remove(dynslicefilepath)
-        
+
         except Exception:
             logging.error('Can not retrieve slice from server...')
             raise SystemExit(1)
@@ -89,5 +89,3 @@ class Mumble(Agent):
             self.booted_servers = self.murmur.getBootedServers()
         except self.mm.InvalidSecretException:
             logging.error('Invalid ice secret.')
-
-    

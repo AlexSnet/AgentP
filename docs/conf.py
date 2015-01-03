@@ -4,9 +4,9 @@ extensions = []
 templates_path = []
 source_suffix = '.rst'
 master_doc = 'index'
-project = u''
+project = u'AgentP'
 copyright_holder = ''
-copyright = u'2012, %s' % copyright_holder
+copyright = u'2015, %s' % copyright_holder
 exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 html_theme = 'default'
@@ -21,7 +21,7 @@ man_pages = [
 ]
 
 sys.path.insert(0, os.pardir)
-m = __import__(project)
+m = __import__(project.lower())
 
 version = m.__version__
 release = version

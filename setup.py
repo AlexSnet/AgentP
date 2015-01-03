@@ -102,7 +102,7 @@ def find_package_data(
 
 PACKAGE = "agentp"
 NAME = "agentp"
-DESCRIPTION = ""
+DESCRIPTION = "AgentP is a small system monitoring framework"
 AUTHOR = "Alex Snet"
 AUTHOR_EMAIL = "me@alexsnet.ru"
 URL = "https://github.com/AlexSnet/AgentP"
@@ -122,11 +122,22 @@ setup(
     package_data=find_package_data(PACKAGE, only_in_packages=False),
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Environment :: Web Environment",
+        "Environment :: No Input/Output (Daemon)",
+
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: BSD License",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: System Administrators",
+        "Intended Audience :: Telecommunications Industry",
+
+        "License :: OSI Approved :: BSD License"
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+
+        "Topic :: Documentation :: Sphinx",
+
+        "Topic :: Internet :: Log Analysis",
+        "Topic :: System :: Monitoring",
+        "Topic :: Utilities"
     ],
     install_requires=[line for line in open('requirements.txt')],
     zip_safe=False,
