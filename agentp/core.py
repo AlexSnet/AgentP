@@ -2,11 +2,14 @@
 Agent P(erry)
 """
 
-import logging
+import time
 import signal
+import logging
 import importlib
 
-from configure import Configuration
+from datetime import timedelta
+
+from agentp.configure import Configuration
 
 from tornado.options import parse_command_line
 from tornado.options import define, options
@@ -46,6 +49,16 @@ class AgentP(object):
             print('Configuration file "%s" does not exists.' % options.configuration)
             raise SystemExit(1)
 
+        default_config = {
+            'delay': timedelta(seconds=10),
+            'timeout': timedelta(seconds=60)
+        }
+
+        default_config.update({
+            'delay': self.config.get('delay', default_config['delay']),
+            'timeout': self.config.get('timeout', default_config['timeout'])
+        })
+
         # Forking
         workers = self.config.get('workers', None)
         if workers == 1 or workers == 'none' or not workers:
@@ -62,9 +75,9 @@ class AgentP(object):
         if process.task_id() == 0 or not process.task_id():
             for agent in self.config.agents:
                 if isinstance(agent, str):
-                    self.io_loop.add_callback(self.configure_agent, agent)
+                    self.io_loop.add_callback(self.configure_agent, agent, **default_config)
                 elif isinstance(agent, dict) and 'module' in agent:
-                    self.io_loop.add_callback(self.configure_agent, agent.pop('module'), **agent)
+                    self.io_loop.add_callback(self.configure_agent, agent.pop('module'), **dict(default_config.items() + agent.items()))
 
         # Starting IOLoop
         self.io_loop.start()
@@ -98,7 +111,7 @@ class AgentP(object):
             kwargs.pop('name')
 
         if name in self._agents:
-            logging.error('Name "%s" is already taken by "%s", use another name.', name, self._agents[name])
+            logging.error('Name "%s" is already taken by "%s", use another name to use this agent.', name, self._agents[name])
             return
 
         agi = None

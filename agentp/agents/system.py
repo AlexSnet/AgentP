@@ -1,22 +1,20 @@
 import psutil
 from agentp import Agent
-from agentp.platforms import Platform
 
 
 class DiskUsage(Agent):
     def tick(self):
-        # c = statsd.StatsClient('localhost', 8125, prefix='system.disk')
-        disk_usage = psutil.disk_usage(self.config.get('path', '/'))
-        prefix = self.config.get('prefix', '')
-        self.gauge('root.total', disk_usage.total)
-        self.gauge('root.used', disk_usage.used)
-        self.gauge('root.free', disk_usage.free)
-        self.gauge('root.percent', disk_usage.percent)
+        disks = self.config.get('disks', ('root', '/'))
+        for disk in disks:
+            disk_usage = psutil.disk_usage(disk[1])
+            self.gauge('%s.total' % disk[0], disk_usage.total)
+            self.gauge('%s.used' % disk[0], disk_usage.used)
+            self.gauge('%s.free' % disk[0], disk_usage.free)
+            self.gauge('%s.percent' % disk[0], disk_usage.percent)
 
 
 class CPUTimes(Agent):
     def tick(self):
-        # c = statsd.StatsClient('localhost', 8125, prefix='system.cpu')
         cpu_times = psutil.cpu_times()
         self.gauge('system_wide.times.user', cpu_times.user)
         self.gauge('system_wide.times.nice', cpu_times.nice)
@@ -32,7 +30,6 @@ class CPUTimes(Agent):
 
 class CPUTimesPercent(Agent):
     def tick(self):
-        # c = statsd.StatsClient('localhost', 8125, prefix='system.cpu')
         value = psutil.cpu_percent(interval=1)
         self.gauge('system_wide.percent', value)
 
@@ -51,7 +48,6 @@ class CPUTimesPercent(Agent):
 
 class Memory(Agent):
     def tick(self):
-        # c = statsd.StatsClient('localhost', 8125, prefix='system.memory')
         swap = psutil.swap_memory()
         self.gauge('swap.total', swap.total)
         self.gauge('swap.used', swap.used)
