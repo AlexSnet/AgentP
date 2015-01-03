@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""
+Thanks for template to https://github.com/paltman/python-setup-template
+"""
+
 import codecs
 import os
 import sys
@@ -109,6 +115,15 @@ URL = "https://github.com/AlexSnet/AgentP"
 VERSION = __import__(PACKAGE).__version__
 
 
+if sys.argv[-1] == 'publish':
+    os.system("python setup.py sdist upload")
+    os.system("python setup.py bdist_wheel upload")
+    print("You probably want to also tag the version now:")
+    print("  git tag -a %s -m 'version %s'" % (VERSION, VERSION))
+    print("  git push --tags")
+    sys.exit()
+
+
 setup(
     name=NAME,
     version=VERSION,
@@ -132,8 +147,6 @@ setup(
         "License :: OSI Approved :: BSD License"
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-
-        "Topic :: Documentation :: Sphinx",
 
         "Topic :: Internet :: Log Analysis",
         "Topic :: System :: Monitoring",

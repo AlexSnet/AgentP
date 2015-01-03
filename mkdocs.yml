@@ -1,0 +1,8 @@
+site_name: AgentP
+repo_url: https://github.com/AlexSnet/AgentP
+theme: readthedocs
+pages:
+- [index.md, Home]
+- [about.md, About]
+- [quickstart.md, Quick Start]
+
