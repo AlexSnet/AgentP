@@ -1,5 +1,5 @@
 """
-Original code from:
+Original code from: https://github.com/andreypopp/configure
 """
 
 import sys
