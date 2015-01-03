@@ -152,6 +152,7 @@ setup(
         "Topic :: System :: Monitoring",
         "Topic :: Utilities"
     ],
+    scripts=['bin/agentp', ],
     install_requires=[line for line in open('requirements.txt')],
     zip_safe=False,
 )

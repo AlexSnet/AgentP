@@ -3,7 +3,7 @@ import sys
 import logging
 import tempfile
 
-from agentp import Agent
+from agentp.agent import Agent
 
 try:
     import Ice

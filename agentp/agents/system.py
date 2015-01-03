@@ -1,5 +1,5 @@
 import psutil
-from agentp import Agent
+from agentp.agent import Agent
 
 
 class DiskUsage(Agent):

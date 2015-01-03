@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 import redis
-from agentp import Agent
+from agentp.agent import Agent
 
 
 class Redis(Agent):

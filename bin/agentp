@@ -1,0 +1,4 @@
+#!/usr/bin/env python
+from agentp.core import AgentP
+
+AgentP().run_command_line()
