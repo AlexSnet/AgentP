@@ -121,6 +121,13 @@ if sys.argv[-1] == 'publish':
     print("You probably want to also tag the version now:")
     print("  git tag -a %s -m 'version %s'" % (VERSION, VERSION))
     print("  git push --tags")
+    print("or just:")
+    print("  python setup.py tag")
+    sys.exit()
+
+if sys.argv[-1] == 'tag':
+    os.system("git tag -a %s -m 'version %s'" % (VERSION, VERSION))
+    os.system("git push --tags")
     sys.exit()
 
 
